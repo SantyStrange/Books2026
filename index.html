@@ -1,0 +1,1037 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>RRB CBT -Books 2026</title>
+<style>
+    :root {
+        --bg-color: #121212;
+        --surface-color: #1e1e1e;
+        --primary-cyan: #00e5ff;
+        --primary-blue: #2979ff;
+        --text-primary: #ffffff;
+        --text-secondary: #b3b3b3;
+        --border-color: #333333;
+        
+        --color-not-visited: #9e9e9e;
+        --color-not-answered: #f44336;
+        --color-answered: #4caf50;
+        --color-marked: #9c27b0;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    /* 100dvh prevents mobile browser URL bars from hiding the bottom elements */
+    body { background-color: var(--bg-color); color: var(--text-primary); height: 100vh; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+    
+    /* Views */
+    .view { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+    .view.active { display: flex; }
+    
+    /* Landing Page */
+    .landing-container { max-width: 800px; margin: auto; padding: 40px 20px; text-align: center; overflow-y: auto; }
+    .landing-container h1 { color: var(--primary-cyan); font-size: 2rem; margin-bottom: 20px; }
+    .instructions { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 10px; padding: 25px; text-align: left; margin-bottom: 30px; line-height: 1.6; }
+    .instructions h3 { color: var(--primary-cyan); margin-bottom: 15px; }
+    .instructions ul { margin-left: 20px; }
+    .start-btn { background: var(--primary-blue); color: #fff; border: none; padding: 15px 30px; font-size: 1.2rem; font-weight: bold; border-radius: 5px; cursor: pointer; transition: 0.2s; text-transform: uppercase; }
+    .start-btn:hover { background: #1565c0; transform: scale(1.05); }
+
+    /* Header */
+    .header { background-color: var(--surface-color); border-bottom: 2px solid var(--primary-cyan); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; z-index: 50; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    .header h1 { font-size: 1.2rem; font-weight: 600; color: var(--primary-cyan); }
+    .timer-container { font-size: 1.2rem; font-weight: bold; background: #2a2a2a; padding: 5px 15px; border-radius: 5px; border: 1px solid var(--primary-blue); }
+    
+    /* Mobile Top Bar (Toggle Palette & Submit) */
+    .mobile-top-bar { display: none; width: 100%; flex-shrink: 0; z-index: 40; border-bottom: 1px solid var(--border-color); }
+    .mobile-top-bar button { flex: 1; padding: 12px; border: none; font-weight: bold; font-size: 0.95rem; cursor: pointer; text-transform: uppercase; }
+    .btn-toggle-top { background: #2a2a2a; color: var(--primary-cyan); border-right: 1px solid var(--border-color) !important; }
+    .btn-submit-top { background: var(--color-answered); color: #fff; }
+
+    /* Main Layout */
+    .main-container { display: flex; flex: 1; overflow: hidden; position: relative; }
+    
+    /* Quiz Left Panel */
+    .quiz-left-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Question Scrolling Area */
+    .question-scroll-area { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; }
+    .q-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; font-size: 1.1rem; color: var(--primary-cyan); border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+    .question-text { font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; }
+    .question-tamil { font-size: 1.1rem; line-height: 1.6; color: var(--primary-cyan); margin-bottom: 25px; }
+    
+    .options-list { display: flex; flex-direction: column; gap: 12px; }
+    .option-label { display: flex; align-items: center; padding: 12px 15px; background: #2a2a2a; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    .option-label:hover { border-color: var(--primary-cyan); background: #333; }
+    .option-label input { margin-right: 15px; transform: scale(1.2); accent-color: var(--primary-cyan); }
+    
+    /* Pinned Action Buttons Footer */
+    .action-buttons { flex-shrink: 0; display: flex; flex-wrap: wrap; gap: 10px; padding: 15px 20px; background: var(--surface-color); border-top: 1px solid var(--border-color); z-index: 10; box-shadow: 0 -4px 10px rgba(0,0,0,0.3); }
+    .btn { padding: 10px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.2s; color: #fff; text-transform: uppercase; font-size: 0.85rem; display: flex; justify-content: center; align-items: center; text-align: center; }
+    .btn-prev { background: #424242; }
+    .btn-prev:hover { background: #616161; }
+    .btn-clear { background: #f44336; }
+    .btn-clear:hover { background: #d32f2f; }
+    .btn-mark { background: var(--color-marked); }
+    .btn-mark:hover { background: #7b1fa2; }
+    .btn-save { background: var(--primary-blue); margin-left: auto; }
+    .btn-save:hover { background: #1565c0; }
+
+    /* Palette Section */
+    .palette-section { width: 320px; background: var(--surface-color); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; transition: transform 0.3s ease; flex-shrink: 0; }
+    .palette-header { padding: 15px; border-bottom: 1px solid var(--border-color); font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+    .palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; padding: 15px; overflow-y: auto; }
+    .q-bubble { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; color: #fff; background: var(--color-not-visited); border: 2px solid transparent; }
+    .q-bubble.active { border-color: var(--primary-cyan); transform: scale(1.1); box-shadow: 0 0 8px var(--primary-cyan); }
+    
+    .status-0 { background: var(--color-not-visited); color: #000; } 
+    .status-1 { background: var(--color-not-answered); } 
+    .status-2 { background: var(--color-answered); } 
+    .status-3 { background: var(--color-marked); } 
+    .status-4 { background: var(--color-marked); position: relative; } 
+    .status-4::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 8px; height: 8px; background: var(--color-answered); border-radius: 50%; border: 1px solid #fff; }
+
+    .legend { padding: 15px; font-size: 0.8rem; border-top: 1px solid var(--border-color); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-box { width: 15px; height: 15px; border-radius: 3px; }
+    .btn-submit-desktop { background: var(--color-answered); width: 100%; padding: 12px; }
+
+    /* Custom Modals (No native alerts) */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; }
+    .modal-content { background: var(--surface-color); padding: 30px; border-radius: 10px; width: 100%; max-width: 500px; border: 1px solid var(--border-color); text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+    .modal-content h2 { color: var(--primary-cyan); margin-bottom: 20px; }
+    .modal-actions { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+    
+    /* Results View */
+    .results-container { max-width: 900px; margin: auto; padding: 40px 20px; text-align: center; overflow-y: auto; width: 100%; }
+    .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 30px 0; }
+    .stat-box { background: #2a2a2a; padding: 20px; border-radius: 8px; border-bottom: 4px solid #666; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .stat-box.st-score { border-color: var(--primary-cyan); grid-column: span 2; }
+    .stat-box.st-correct { border-color: var(--color-answered); }
+    .stat-box.st-wrong { border-color: var(--color-not-answered); }
+    .stat-box h3 { font-size: 2.5rem; margin-bottom: 5px; }
+    .stat-box.st-score h3 { font-size: 3.5rem; color: var(--primary-cyan); }
+    
+    /* Tabbed Review Section */
+    #detailed-review-section { display: none; margin-top: 40px; }
+    .review-tabs { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+    .tab-btn { background: #2a2a2a; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 12px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; flex: 1; min-width: 110px; text-align: center; transition: 0.2s; }
+    .tab-btn:hover { background: #333; }
+    .tab-btn.active { color: #fff; border-bottom: 3px solid; }
+    .tab-btn[data-tab="correct"].active { border-color: var(--color-answered); background: rgba(76, 175, 80, 0.1); }
+    .tab-btn[data-tab="wrong"].active { border-color: var(--color-not-answered); background: rgba(244, 67, 54, 0.1); }
+    .tab-btn[data-tab="unattempted"].active { border-color: var(--color-not-visited); background: rgba(158, 158, 158, 0.1); }
+    
+    .tab-content { display: none; text-align: left; }
+    .tab-content.active { display: block; }
+    
+    .review-item { padding: 20px; background: #2a2a2a; margin-bottom: 15px; border-radius: 8px; border-left: 5px solid var(--border-color); }
+    .review-item.correct { border-left-color: var(--color-answered); }
+    .review-item.wrong { border-left-color: var(--color-not-answered); }
+    .review-item.unattempted { border-left-color: var(--color-not-visited); }
+    
+    .answer-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; margin-top: 10px; }
+    .tag-correct { background: rgba(76, 175, 80, 0.2); color: #81c784; border: 1px solid #4caf50; }
+    .tag-wrong { background: rgba(244, 67, 54, 0.2); color: #e57373; border: 1px solid #f44336; }
+    .tag-unattempted { background: rgba(158, 158, 158, 0.2); color: #e0e0e0; border: 1px solid #9e9e9e; }
+    
+    .explanation-box { margin-top: 12px; padding: 12px; background: #1e1e1e; border-radius: 5px; border-left: 3px solid var(--primary-cyan); font-size: 0.95rem; line-height: 1.5; color: #ddd; }
+
+    /* MOBILE SPECIFIC OVERRIDES */
+    @media (max-width: 768px) {
+        .mobile-top-bar { display: flex; }
+        .palette-section { position: absolute; top: 0; right: 0; height: 100%; transform: translateX(100%); z-index: 100; box-shadow: -5px 0 15px rgba(0,0,0,0.5); }
+        .palette-section.open { transform: translateX(0); }
+        
+        .result-grid { grid-template-columns: 1fr; }
+        .stat-box.st-score { grid-column: span 1; }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 10px;
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+        }
+        .btn-save { grid-column: span 2; margin-left: 0; padding: 15px; font-size: 1.1rem; order: 1; }
+        .btn-mark { order: 2; padding: 12px; }
+        .btn-clear { order: 3; padding: 12px; }
+        .btn-prev { grid-column: span 2; order: 4; padding: 12px; }
+    }
+</style>
+</head>
+<body>
+
+<!-- VIEW 1: Landing Page -->
+<div id="view-landing" class="view active">
+    <div class="landing-container">
+        <h1>RRB CBT: books</h1>
+        <div class="instructions">
+            <h3>📝 Instructions:</h3>
+            <ul>
+                <li><strong>Total Questions:</strong> 50 (Bilingual: English & Tamil).</li>
+                <li><strong>Time Allotted:</strong> 15 Minutes.</li>
+                <li><strong>Marking Scheme:</strong> +1 mark for correct answers, <strong>-0.33 marks</strong> for incorrect answers.</li>
+                <li>Questions are shuffled automatically for every attempt.</li>
+                <li>Use the Question Palette to navigate. You can Mark questions for review.</li>
+                <li>Ensure you have a stable connection. Do not refresh the page during the exam.</li>
+            </ul>
+        </div>
+        <button class="start-btn" onclick="startQuiz()">I am ready to begin</button>
+    </div>
+</div>
+
+<!-- VIEW 2: Main Quiz -->
+<div id="view-quiz" class="view">
+    
+    <div class="header">
+        <h1>Books and Authors</h1>
+        <div class="timer-container" id="timer">15:00</div>
+    </div>
+
+    <!-- Mobile Explicit Top Bar -->
+    <div class="mobile-top-bar">
+        <button class="btn-toggle-top" onclick="togglePalette()">☰ Question Palette</button>
+        <button class="btn-submit-top" onclick="showSubmitConfirm()">Submit Exam</button>
+    </div>
+
+    <div class="main-container">
+        
+        <!-- Question Panel (Scrollable content + Fixed Footer) -->
+        <div class="quiz-left-panel">
+            
+            <div class="question-scroll-area">
+                <div class="q-header">
+                    <span id="q-no">Question 1</span>
+                    <span style="color: var(--text-secondary); font-size: 0.9rem;">Negative Marks: -0.33</span>
+                </div>
+                
+                <div class="question-text" id="q-text-en">Loading...</div>
+                <div class="question-tamil" id="q-text-ta">ஏற்றுகிறது...</div>
+                
+                <div class="options-list" id="options-container"></div>
+            </div>
+            
+            <!-- Fixed Action Buttons Footer -->
+            <div class="action-buttons">
+                <button class="btn btn-save" onclick="saveAndNext()">Save & Next ►</button>
+                <button class="btn btn-mark" onclick="markAndNext()">Mark & Next</button>
+                <button class="btn btn-clear" onclick="clearResponse()">Clear</button>
+                <button class="btn btn-prev" onclick="prevQuestion()">◄ Previous</button>
+            </div>
+            
+        </div>
+        
+        <!-- Collapsible Palette -->
+        <div class="palette-section" id="palette">
+            <div class="palette-header">
+                <span>Question Palette</span>
+                <button onclick="togglePalette()" class="btn btn-prev" style="padding: 5px; display: none;" id="close-palette-btn">X</button>
+            </div>
+            <div class="palette-grid" id="palette-grid"></div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-box status-2"></div> Answered</div>
+                <div class="legend-item"><div class="legend-box status-1"></div> Not Answered</div>
+                <div class="legend-item"><div class="legend-box status-0"></div> Not Visited</div>
+                <div class="legend-item"><div class="legend-box status-3"></div> Marked</div>
+                <div class="legend-item"><div class="legend-box status-4"></div> Ans & Marked</div>
+            </div>
+            <div style="padding: 15px;">
+                <button class="btn btn-submit btn-submit-desktop" onclick="showSubmitConfirm()">SUBMIT EXAM</button>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Custom Confirmation Modal -->
+<div class="modal-overlay" id="confirm-modal">
+    <div class="modal-content">
+        <h2>Submit Exam?</h2>
+        <p>Are you sure you want to submit? You will not be able to change your answers.</p>
+        <p id="unanswered-warning" style="color: var(--color-not-answered); margin-top: 10px; font-weight: bold; display: none;"></p>
+        <div class="modal-actions">
+            <button class="btn btn-prev" onclick="closeSubmitConfirm()">No, Go Back</button>
+            <button class="btn btn-submit" style="width: auto; margin-top: 0; padding: 10px 20px;" onclick="submitExam()">Yes, Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- VIEW 3: Results & Review -->
+<div id="view-results" class="view">
+    <div class="results-container">
+        <h1 style="color: var(--primary-cyan); font-size: 2.2rem; margin-bottom: 20px;">Exam Submitted Successfully</h1>
+        
+        <div class="result-grid">
+            <div class="stat-box st-score">
+                <div>Final Score</div>
+                <h3 id="res-score">0.00</h3>
+                <div style="color: var(--text-secondary); font-size: 0.9rem;">(Out of 50)</div>
+            </div>
+            <div class="stat-box st-correct">
+                <h3 id="res-correct">0</h3>
+                <div>Correct</div>
+            </div>
+            <div class="stat-box st-wrong">
+                <h3 id="res-wrong">0</h3>
+                <div>Incorrect</div>
+            </div>
+        </div>
+        
+        <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 25px;">Unattempted Questions: <strong id="res-unattempted" style="color: #fff;">0</strong></p>
+        
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;" id="post-exam-actions">
+            <button class="btn btn-save" onclick="showDetailedReview()">View Detailed Review</button>
+            <button class="btn btn-prev" onclick="location.reload()">Restart Quiz</button>
+        </div>
+        
+        <!-- 3-Section Tabbed Review -->
+        <div id="detailed-review-section">
+            <h2 style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Test Review</h2>
+            
+            <div class="review-tabs">
+                <button class="tab-btn" data-tab="correct" onclick="switchTab('correct')">Correct (<span id="tab-count-correct">0</span>)</button>
+                <button class="tab-btn" data-tab="wrong" onclick="switchTab('wrong')">Incorrect (<span id="tab-count-wrong">0</span>)</button>
+                <button class="tab-btn" data-tab="unattempted" onclick="switchTab('unattempted')">Unattempted (<span id="tab-count-unattempted">0</span>)</button>
+            </div>
+            
+            <div id="review-content-correct" class="tab-content"></div>
+            <div id="review-content-wrong" class="tab-content"></div>
+            <div id="review-content-unattempted" class="tab-content"></div>
+        </div>
+        
+    </div>
+</div>
+
+<script>
+const baseQuizData = [
+    // ================= 33 CORE BOOKS & AUTHORS MCQS (Q1 - Q33) =================
+    // 1
+    {
+        qE: "Who are the co-authors of the book 'Sanskritir Ratna Bhandar: Bhaowaiyar Itibritto' launched at Uprashtrapati Bhavan?",
+        qT: "புதுடெல்லி உபராஷ்டிரபதி பவனில் வெளியிடப்பட்ட 'சம்ஸ்கிருதிர் ரத்ன பண்டார்: பாவையார் இதிபிரித்தோ' நூலின் இணை ஆசிரியர்கள் யார்?",
+        oE: ["Dr. Jayanta Kumar Roy and Sangita Roy", "Ram Madhav and Sanjeev Sanyal", "Yang Shuang-zi and Lin King", "Prem Prakash and Prabhat Kumar"],
+        oT: ["டாக்டர் ஜெயந்த குமார் ராய் மற்றும் சங்கீதா ராய்", "ராம் மாதவ் மற்றும் சஞ்சீவ் சன்யால்", "யாங் ஷுவாங்-சி மற்றும் லின் கிங்", "பிரேம் பிரகாஷ் மற்றும் பிரபாத் குமார்"],
+        a: 0,
+        exp: "Co-authored by Lok Sabha MP Dr. Jayanta Kumar Roy and Sangita Roy, the book documents the Bhawaiya folk music tradition of North Bengal and Assam."
+    },
+    // 2
+    {
+        qE: "Who released the commemorative volume on 'Operation Sindoor' featuring testimonies of 100 armed forces personnel?",
+        qT: "100 முப்படை வீரர்களின் அனுபவங்களைக் கொண்ட 'ஆபரேஷன் சிந்தூர்' சிறப்பு நினைவு நூலை வெளியிட்டவர் யார்?",
+        oE: ["Narendra Modi", "Rajnath Singh", "Amit Shah", "General Anil Chauhan"],
+        oT: ["நரேந்திர மோடி", "ராஜ்நாத் சிங்", "அமித் ஷா", "ஜெனரல் அனில் சவுகான்"],
+        a: 1,
+        exp: "Union Defence Minister Rajnath Singh released the commemorative volume on Operation Sindoor in New Delhi."
+    },
+    // 3
+    {
+        qE: "Who authored the book 'Tides of Time: Bharat's History through Murals in Parliament'?",
+        qT: "'டைட்ஸ் ஆஃப் டைம்: பாரத்ஸ் ஹிஸ்டரி த்ரூ முரல்ஸ் இன் பார்லிமென்ட்' என்ற நூலை எழுதியவர் யார்?",
+        oE: ["Smriti Irani", "Arundhati Roy", "Sudha Murty", "Shobhaa De"],
+        oT: ["ஸ்மிருதி இரானி", "அருந்ததி ராய்", "சுதா மூர்த்தி", "ஷோபா டே"],
+        a: 2,
+        exp: "Authored by Rajya Sabha MP Sudha Murty and published by the Lok Sabha Secretariat, the book explores 124 mural panels in Parliament."
+    },
+    // 4
+    {
+        qE: "'Four Stars of Destiny' is the autobiography of which former Chief of the Army Staff?",
+        qT: "'ஃபோர் ஸ்டார்ஸ் ஆஃப் டெஸ்டினி' என்பது எந்த முன்னாள் ராணுவத் தலைமைத் தளபதியின் சுயசரிதையாகும்?",
+        oE: ["General Bipin Rawat", "General Manoj Pande", "General Upendra Dwivedi", "General Manoj Mukund Naravane"],
+        oT: ["ஜெனரல் பிபின் ராவத்", "ஜெனரல் மனோஜ் பாண்டே", "ஜெனரல் உபேந்திர திவேதி", "ஜெனரல் மனோஜ் முகுந்த் நரவனே"],
+        a: 3,
+        exp: "'Four Stars of Destiny' is the autobiography of General Manoj Mukund Naravane, the 28th Chief of the Army Staff of India."
+    },
+    // 5
+    {
+        qE: "Who is the author of the memoir 'The Second Orbit: Belief of a Man... Dreams of 1.4 Billion Hearts'?",
+        qT: "'தி செகண்ட் ஆர்பிட்: பிலீஃப் ஆஃப் எ மேன்... ட்ரீம்ஸ் ஆஃப் 1.4 பில்லியன் ஹார்ட்ஸ்' என்ற நினைவு நூலின் ஆசிரியர் யார்?",
+        oE: ["Group Captain Shubhanshu Shukla", "Air Chief Marshal Amar Preet Singh", "Group Captain Prashanth Balakrishnan Nair", "Group Captain Angad Pratap"],
+        oT: ["குரூப் கேப்டன் சுபான்ஷு சுக்லா", "ஏர் சீஃப் மார்ஷல் அமர் ப்ரீத் சிங்", "குரூப் கேப்டன் பிரசாந்த் பாலகிருஷ்ணன் நாயர்", "குரூப் கேப்டன் அங்கத் பிரதாப்"],
+        a: 0,
+        exp: "Group Captain Shubhanshu Shukla authored this memoir chronicling his journey and training for the Axiom-4 mission to the ISS."
+    },
+    // 6
+    {
+        qE: "Who edited the book 'The Voice of Justice: Justice Gavai Speaks' released by Vice-President C. P. Radhakrishnan?",
+        qT: "துணைக் குடியரசுத் தலைவர் சி. பி. ராதாகிருஷ்ணன் வெளியிட்ட 'தி வாய்ஸ் ஆஃப் ஜஸ்டிஸ்: ஜஸ்டிஸ் கவாய் ஸ்பீக்ஸ்' நூலைத் தொகுத்தவர் யார்?",
+        oE: ["Justice Surya Kant", "Prof. S. Sivakumar", "Justice Vikram Nath", "Dr. Rajesh Kumar"],
+        oT: ["நீதிபதி சூர்யா காந்த்", "பேராசிரியர் எஸ். சிவகுமார்", "நீதிபதி விக்ரம் நாத்", "டாக்டர் ராஜேஷ் குமார்"],
+        a: 1,
+        exp: "Edited by Prof. S. Sivakumar with a foreword by CJI Justice Surya Kant, the book compiles speeches of Justice B. R. Gavai."
+    },
+    // 7
+    {
+        qE: "Who authored the field guide 'Butterflies of Gibbon Wildlife Sanctuary - Second Edition'?",
+        qT: "'பட்டர்ஃபிளைஸ் ஆஃப் கிப்பன் வனவிலங்கு சரணாலயம் - இரண்டாம் பதிப்பு' என்ற நூலை எழுதியவர் யார்?",
+        oE: ["Peter Smetacek", "Isaac Kehimkar", "Sarangapani Neog", "Purnendu Roy Kapoor"],
+        oT: ["பீட்டர் ஸ்மெடாசெக்", "ஐசக் கெஹிம்கர்", "சாரங்கபாணி நியோக்", "பூர்ணேந்து ராய் கபூர்"],
+        a: 2,
+        exp: "Wildlife photographer and naturalist Sarangapani Neog authored this guide documenting 281 butterfly species in Assam's Hoollongapar Gibbon Wildlife Sanctuary."
+    },
+    // 8
+    {
+        qE: "Who is the author of 'The Conscience Network: A Chronicle of Resistance to a Dictatorship'?",
+        qT: "'தி கான்ஷியன்ஸ் நெட்வொர்க்: எ க்ரோனிக்கிள் ஆஃப் ரெசிஸ்டன்ஸ் டு எ டிக்டேட்டர்ஷிப்' என்ற நூலின் ஆசிரியர் யார்?",
+        oE: ["Ruskin Bond", "R. Kaushik", "Sunil Seth", "Sugata Srinivasaraju"],
+        oT: ["ரஸ்கின் பாண்ட்", "ஆர். கௌஷிக்", "சுனில் சேத்", "சுகதா ஸ்ரீனிவாசராஜு"],
+        a: 3,
+        exp: "Sugata Srinivasaraju authored 'The Conscience Network', chronicling resistance movements against the Indian Emergency (1975–1977)."
+    },
+    // 9
+    {
+        qE: "Who wrote 'Agni Sarassulo Vikasitinchina Kamalam Droupadi Murmu' on the life journey of President Droupadi Murmu?",
+        qT: "குடியரசுத் தலைவர் திரௌபதி முர்முவின் வாழ்க்கைப் பயணத்தை விவரிக்கும் 'அக்னி சரஸுலோ விகசிதின்சின கமலம் திரௌபதி முர்மு' நூலை எழுதியவர் யார்?",
+        oE: ["Yarlagadda Lakshmi Prasad", "Kasturi Ray", "Dr. Kaleem Khan", "Vikas Khanna"],
+        oT: ["யார்லகட்டா லட்சுமி பிரசாத்", "கஸ்தூரி ராய்", "டாக்டர் கலீம் கான்", "விகாஸ் கண்ணா"],
+        a: 0,
+        exp: "Yarlagadda Lakshmi Prasad authored this book detailing the inspiring life journey of President Droupadi Murmu."
+    },
+    // 10
+    {
+        qE: "Who authored 'History That India Ignored', whose second edition was released by Goa Chief Minister Pramod Sawant?",
+        qT: "கோவா முதல்வர் பிரமோத் சாவந்த் வெளியிட்ட 'ஹிஸ்டரி தட் இந்தியா இக்னோர்ட்' என்ற நூலின் இரண்டாம் பதிப்பை எழுதியவர் யார்?",
+        oE: ["Vikram Sampath", "Prem Prakash", "Sanjeev Sanyal", "Amish Tripathi"],
+        oT: ["விக்ரம் சம்பத்", "பிரேம் பிரகாஷ்", "சஞ்சீவ் சன்யால்", "அமிஷ் திரிபாதி"],
+        a: 1,
+        exp: "Veteran journalist and ANI founder Prem Prakash authored 'History That India Ignored'."
+    },
+    // 11
+    {
+        qE: "Who is the author of the biography 'Salman Khan: The Sultan of Bollywood' published by HarperCollins India?",
+        qT: "ஹார்பர்காலின்ஸ் இந்தியா வெளியிட்ட 'சல்மான் கான்: தி சுல்தான் ஆஃப் பாலிவுட்' வாழ்க்கை வரலாற்று நூலின் ஆசிரியர் யார்?",
+        oE: ["Karan Johar", "Shobhaa De", "Mohar Basu", "Anupama Chopra"],
+        oT: ["கரண் ஜோஹர்", "ஷோபா டே", "மொஹர் பாசு", "அனுபமா சோப்ரா"],
+        a: 2,
+        exp: "Noted entertainment journalist Mohar Basu wrote 'Salman Khan: The Sultan of Bollywood'."
+    },
+    // 12
+    {
+        qE: "Who authored 'Reclaiming Incredible: A Blueprint of India Tourism's Unclaimed Throne'?",
+        qT: "'ரிக்ளைமிங் இன்க்ரெடிபிள்: எ ப்ளூபிரிண்ட் ஆஃப் இந்தியா டூரிசம்ஸ் அன்க்ளைம்ட் த்ரோன்' என்ற நூலை எழுதியவர் யார்?",
+        oE: ["Raghuram Rajan", "Amitabh Kant", "Sanjeev Sanyal", "Naveen Kundu"],
+        oT: ["ரகுராம் ராஜன்", "அமிதாப் காந்த்", "சஞ்சீவ் சன்யால்", "நவீன் குண்டு"],
+        a: 3,
+        exp: "Travel and hospitality industry veteran Naveen Kundu authored this strategic roadmap for India's tourism sector."
+    },
+    // 13
+    {
+        qE: "Who is the author of 'IIT: The Story of India's Most Prestigious Educational Ecosystem' released by Om Birla?",
+        qT: "ஓம் பிர்லா வெளியிட்ட 'ஐஐடி: தி ஸ்டோரி ஆஃப் இந்தியாஸ் மோஸ்ட் பிரெஸ்டீஜியஸ் எஜுகேஷனல் எக்கோசிஸ்டம்' நூலின் ஆசிரியர் யார்?",
+        oE: ["Prabhat Kumar", "Chetan Bhagat", "Nandan Nilekani", "Sanjeev Sanyal"],
+        oT: ["பிரபாத் குமார்", "சேத்தன் பகத்", "நந்தன் நிலேகனி", "சஞ்சீவ் சன்யால்"],
+        a: 0,
+        exp: "Prabhat Kumar authored this book chronicling the evolution and global legacy of the Indian Institutes of Technology."
+    },
+    // 14
+    {
+        qE: "Which Nobel Peace Prize laureate authored the book 'Karuna: The Power of Compassion' released in March 2026?",
+        qT: "மார்ச் 2026-இல் வெளியிடப்பட்ட 'கருணா: தி பவர் ஆஃப் கம்பாஷன்' என்ற நூலை எழுதிய அமைதிக்கான நோபல் பரிசு வென்றவர் யார்?",
+        oE: ["Malala Yousafzai", "Kailash Satyarthi", "Dalai Lama", "Abhijit Banerjee"],
+        oT: ["மலாலா யூசுப்சாய்", "கைலாஷ் சத்யார்த்தி", "தலாய் லாமா", "அபிஜித் பானர்ஜி"],
+        a: 1,
+        exp: "Child rights activist and Nobel Peace Prize laureate Kailash Satyarthi authored 'Karuna: The Power of Compassion'."
+    },
+    // 15
+    {
+        qE: "Which book based on 35 years of experiences with Prime Minister Narendra Modi was unveiled by Union Minister Shivraj Singh Chouhan?",
+        qT: "பிரதமர் நரேந்திர மோடியுடனான 35 ஆண்டு கால அனுபவங்களை அடிப்படையாகக் கொண்டு மத்திய அமைச்சர் சிவராஜ் சிங் சௌஹான் வெளியிட்ட நூல் எது?",
+        oE: ["Karmayodha Granth", "Sakshi Bhaav", "Apnapan", "Modi@20: Dreams Meet Delivery"],
+        oT: ["கர்மயோதா கிரந்த்", "சாக்ஷி பாவ்", "அப்னாபன்", "மோடி@20: ட்ரீம்ஸ் மீட் டெலிவரி"],
+        a: 2,
+        exp: "Union Minister Shivraj Singh Chouhan unveiled 'Apnapan' (Narendra Modi Sang Mere Anubhav), sharing his 35 years of political experiences with PM Modi."
+    },
+    // 16
+    {
+        qE: "Who is the author of the two companion legal books 'The Bench, The Bar and The Bizarre' and 'The Lawful and The Awful'?",
+        qT: "'தி பெஞ்ச், தி பார் அண்ட் தி பிசார்' மற்றும் 'தி லாஃபுல் அண்ட் தி ஆஃபுல்' ஆகிய இரு சட்ட நூல்களின் ஆசிரியர் யார்?",
+        oE: ["Justice Surya Kant", "D. Y. Chandrachud", "Harish Salve", "Tushar Mehta"],
+        oT: ["நீதிபதி சூர்யா காந்த்", "டி. ஒய். சந்திரசூட்", "ஹரிஷ் சால்வே", "துஷார் மேத்தா"],
+        a: 3,
+        exp: "Tushar Mehta authored both companion collections of legal anecdotes and courtroom stories, published by Rupa Publications India."
+    },
+    // 17
+    {
+        qE: "Who authored 'Beyond GDP: In Pursuit of Measuring Happiness' released in July 2026?",
+        qT: "ஜூலை 2026-இல் வெளியிடப்பட்ட 'பியாண்ட் ஜிடிபி: இன் பர்சூட் ஆஃப் மெஷரிங் ஹேப்பினஸ்' என்ற நூலை எழுதியவர் யார்?",
+        oE: ["Alok Ranjan", "Amitav Ghosh", "Shaktikanta Das", "Raghuram Rajan"],
+        oT: ["அலோக் ரஞ்சன்", "அமிதவ் கோஷ்", "சக்திகாந்த தாஸ்", "ரகுராம் ராஜன்"],
+        a: 0,
+        exp: "Former bureaucrat Alok Ranjan wrote 'Beyond GDP: In Pursuit of Measuring Happiness', advocating for well-being metrics beyond GDP."
+    },
+    // 18
+    {
+        qE: "Who is the author of 'India's First Olympic Gold: Hockey Triumph at Amsterdam'?",
+        qT: "'இந்தியாஸ் ஃபர்ஸ்ட் ஒலிம்பிக் கோல்ட்: ஹாக்கி ட்ரையம்ப் அட் ஆம்ஸ்டர்டாம்' என்ற விளையாட்டு வரலாற்று நூலின் ஆசிரியர் யார்?",
+        oE: ["Boria Majumdar", "K. Arumugam", "Nalini Natarajan", "Sanjeev Sanyal"],
+        oT: ["போரியா மஜும்தார்", "கே. ஆறுமுகம்", "நளினி நடராஜன்", "சஞ்சீவ் சன்யால்"],
+        a: 1,
+        exp: "Sports historian K. Arumugam authored this book detailing India's 1928 Amsterdam Olympic hockey gold victory, released by IOA President PT Usha."
+    },
+    // 19
+    {
+        qE: "Who won the International Booker Prize 2026 for the acclaimed novel 'Taiwan Travelogue'?",
+        qT: "'தைவான் டிராவலாக்' என்ற நாவலுக்காக 2026 சர்வதேச புக்கர் பரிசை வென்றவர்கள் யார்?",
+        oE: ["Jenny Erpenbeck and Michael Hofmann", "Georgi Gospodinov and Angela Rodel", "Yang Shuang-zi and Lin King", "Han Kang and Deborah Smith"],
+        oT: ["ஜென்னி எர்பென்பெக் மற்றும் மைக்கேல் ஹாஃப்மேன்", "ஜார்ஜி கோஸ்போடினோவ் மற்றும் ஏஞ்சலா ரோடல்", "யாங் ஷுவாங்-சி மற்றும் லின் கிங்", "ஹான் காங் மற்றும் டெபோரா ஸ்மித்"],
+        a: 2,
+        exp: "Taiwanese author Yang Shuang-zi and English translator Lin King won the International Booker Prize 2026 for 'Taiwan Travelogue'."
+    },
+    // 20
+    {
+        qE: "Who authored the corporate guide 'The Inspired Leader: Seven Practices to Unlock Your Leadership Potential'?",
+        qT: "'தி இன்ஸ்பயர்ட் லீடர்: செவன் பிராக்டிசஸ் டு அன்லாக் யுவர் லீடர்ஷிப் பொட்டன்ஷியல்' என்ற நூலை எழுதியவர் யார்?",
+        oE: ["Chetan Bhagat", "Arundhati Roy", "Shyam Srinivasan", "Anil Sachdev"],
+        oT: ["சேத்தன் பகத்", "அருந்ததி ராய்", "ஷ்யாம் ஸ்ரீனிவாசன்", "அனில் சச்தேவ்"],
+        a: 3,
+        exp: "Leadership coach Anil Sachdev authored 'The Inspired Leader', released in July 2026."
+    },
+    // 21
+    {
+        qE: "Who compiled the coffee table book 'Stamps, Coins And Banknotes Issued During The Premiership Of Shri Narendra Modi Part-1'?",
+        qT: "'ஸ்டாம்ப்ஸ், காயின்ஸ் அண்ட் பேங்க்நோட்ஸ் இஷ்யூட் டியூரிங் தி பிரீமியர்ஷிப் ஆஃப் ஸ்ரீ நரேந்திர மோடி பாகம்-1' என்ற நூலைத் தொகுத்தவர் யார்?",
+        oE: ["Sushil Kumar Agrawal", "Dr. Bibek Debroy", "Ram Bahadur Rai", "Amitabh Kant"],
+        oT: ["சுஷில் குமார் அகர்வால்", "டாக்டர் பிபேக் தேப்ராய்", "ராம் பகதூர் ராய்", "அமிதாப் காந்த்"],
+        a: 0,
+        exp: "Renowned numismatist Sushil Kumar Agrawal compiled this archive covering PM Modi's first term (2014–2019)."
+    },
+    // 22
+    {
+        qE: "Who is the author of the short story collection 'All-Time Favourite Friendship Stories' published by Penguin Random House?",
+        qT: "பெங்குயின் ரேண்டம் ஹவுஸ் வெளியிட்ட 'ஆல்-டைம் ஃபேவரிட் ஃபிரெண்ட்ஷிப் ஸ்டோரீஸ்' என்ற சிறுகதைத் தொகுப்பின் ஆசிரியர் யார்?",
+        oE: ["Arundhati Roy", "Ruskin Bond", "Chetan Bhagat", "Vikram Seth"],
+        oT: ["அருந்ததி ராய்", "ரஸ்கின் பாண்ட்", "சேத்தன் பகத்", "விக்ரம் சேத்"],
+        a: 1,
+        exp: "Beloved Indian storyteller Ruskin Bond authored 'All-Time Favourite Friendship Stories'."
+    },
+    // 23
+    {
+        qE: "Who wrote 'Bringing the Cheetah Back to India: How Diplomacy Made Conservation's Big Mission Possible'?",
+        qT: "'பிரிங்கிங் தி சீட்டா பேக் டு இந்தியா: ஹவ் டிப்ளமசி மேட் கன்சர்வேஷன்ஸ் பிக் மிஷன் பாசிபிள்' என்ற நூலை எழுதியவர் யார்?",
+        oE: ["S. P. Yadav", "Rajesh Bansal", "Prashant Agrawal", "Sarangapani Neog"],
+        oT: ["எஸ். பி. யாதவ்", "ராஜேஷ் பன்சால்", "பிரசாந்த் அகர்வால்", "சாரங்கபாணி நியோக்"],
+        a: 2,
+        exp: "Diplomat Prashant Agrawal authored this book detailing the international wildlife diplomacy behind India's cheetah reintroduction."
+    },
+    // 24
+    {
+        qE: "Which veteran banker authored his debut book 'Better Never Stops' in May 2026?",
+        qT: "மே 2026-இல் 'பெட்டர் நெவர் ஸ்டாப்ஸ்' என்ற தனது முதல் நூலை எழுதிய மூத்த வங்கியாளர் யார்?",
+        oE: ["Dinesh Khara", "Sandeep Bakhshi", "Uday Kotak", "Shyam Srinivasan"],
+        oT: ["தினேஷ் காரா", "சந்தீப் பக்ஷி", "உதய் கோடக்", "ஷ்யாம் ஸ்ரீனிவாசன்"],
+        a: 3,
+        exp: "Federal Bank CEO Shyam Srinivasan authored his debut corporate memoir and management guide 'Better Never Stops'."
+    },
+    // 25
+    {
+        qE: "Who jointly authored the book 'RSS @ 100: A Century of Service, Unity & Sacrifice'?",
+        qT: "'ஆர்எஸ்எஸ் @ 100: எ செஞ்சுரி ஆஃப் சர்வீஸ், யூனிட்டி & சேக்ரிஃபைஸ்' என்ற நூலைக் கூட்டாக எழுதியவர்கள் யார்?",
+        oE: ["Ram Madhav and Sanjeev Sanyal", "Shyam Jaju and Anupam Trivedi", "Shivraj Singh Chouhan and Prem Prakash", "Prabhat Kumar and Alok Ranjan"],
+        oT: ["ராம் மாதவ் மற்றும் சஞ்சீவ் சன்யால்", "ஷ்யாம் ஜாஜு மற்றும் அனுபம் திரிவேதி", "சிவராஜ் சிங் சௌஹான் மற்றும் பிரேம் பிரகாஷ்", "பிரபாத் குமார் மற்றும் அலோக் ரஞ்சன்"],
+        a: 0,
+        exp: "Strategic thinker Ram Madhav and economist Sanjeev Sanyal co-authored 'RSS @ 100', released by Vice-President C. P. Radhakrishnan."
+    },
+    // 26
+    {
+        qE: "Which medical-legal guidebook was released by Union Minister of State for Law and Justice Arjun Ram Meghwal in February 2026?",
+        qT: "பிப்ரவரி 2026-இல் மத்திய சட்ட மற்றும் நீதித்துறை இணை அமைச்சர் அர்ஜுன் ராம் மேக்வால் வெளியிட்ட மருத்துவ-சட்ட வழிகாட்டி நூல் எது?",
+        oE: ["Digital India Health Manual", "The Medicolegal Guidebook", "The Lawful and The Awful", "Indian Medical Jurisprudence"],
+        oT: ["டிஜிட்டல் இந்தியா ஹெல்த் மேனுவல்", "தி மெடிகோலீகல் கைட்புக்", "தி லாஃபுல் அண்ட் தி ஆஃபுல்", "இந்தியன் மெடிக்கல் ஜூரிஸ்ப்ரூடன்ஸ்"],
+        a: 1,
+        exp: "Arjun Ram Meghwal launched 'The Medicolegal Guidebook' in New Delhi to bridge clinical medicine practices with Indian legal statutes."
+    },
+    // 27
+    {
+        qE: "Who authored the poetic work 'Sab Par Ram Tapasvi Raja', reinterpreting pivotal events of the Ramayana?",
+        qT: "ராமாயணத்தின் முக்கிய நிகழ்வுகளைக் கவிதை வடிவில் மறுஆய்வு செய்யும் 'சப் பர் ராம் தபஸ்வி ராஜா' நூலை எழுதியவர் யார்?",
+        oE: ["Ramachandra Guha", "Amitav Ghosh", "Ashutosh Agnihotri", "Amish Tripathi"],
+        oT: ["ராமச்சந்திர குஹா", "அமிதவ் கோஷ்", "அசுதோஷ் அக்னிஹோத்ரி", "அமிஷ் திரிபாதி"],
+        a: 2,
+        exp: "IAS officer and author Ashutosh Agnihotri wrote 'Sab Par Ram Tapasvi Raja'."
+    },
+    // 28
+    {
+        qE: "Who is the author of the book 'Mahatma: A Great Communicator' focusing on Mahatma Gandhi's communication strategies?",
+        qT: "மகாத்மா காந்தியின் தகவல் தொடர்பு உத்திகளை மையமாகக் கொண்ட 'மகாத்மா: எ கிரேட் கம்யூனிகேட்டர்' நூலின் ஆசிரியர் யார்?",
+        oE: ["P. U. Joseph", "Ramachandra Guha", "Sugata Srinivasaraju", "Dheeraj Kakadia"],
+        oT: ["பி. யு. ஜோசப்", "ராமச்சந்திர குஹா", "சுகதா ஸ்ரீனிவாசராஜு", "தீரஜ் ககாடியா"],
+        a: 3,
+        exp: "Dheeraj Kakadia authored 'Mahatma: A Great Communicator', analysing Gandhi's mass mobilization and media strategies."
+    },
+    // 29
+    {
+        qE: "Who authored the two books 'E Mati Katha Kahe' and 'Buxi Jagabandhu: The Great Commander'?",
+        qT: "'இ மாட்டி கதா கஹே' மற்றும் 'பக்ஷி ஜகபந்து: தி கிரேட் கமாண்டர்' ஆகிய இரு நூல்களையும் எழுதியவர் யார்?",
+        oE: ["Biswabhusan Harichandan", "Ganeshi Lal", "Raghubar Das", "Satya Pal Malik"],
+        oT: ["பிஸ்வபூஷண் ஹரிசந்தன்", "கணேஷி லால்", "ரகுபர் தாஸ்", "சத்ய பால் மாலிக்"],
+        a: 0,
+        exp: "Former Governor of Andhra Pradesh and Chhattisgarh Biswabhusan Harichandan wrote both books, which were released by former Odisha Governor Raghubar Das."
+    },
+    // 30
+    {
+        qE: "Who authored the military book 'The Curious and The Classified: Unearthing Military Myths and Mysteries'?",
+        qT: "'தி கியூரியஸ் அண்ட் தி கிளாசிஃபைட்: அன்எர்த்திங் மிலிட்டரி மித்ஸ் அண்ட் மிஸ்டரீஸ்' என்ற ராணுவ நூலின் ஆசிரியர் யார்?",
+        oE: ["General Manoj Pande", "General Manoj Mukund Naravane", "General Anil Chauhan", "Major General Ian Cardozo"],
+        oT: ["ஜெனரல் மனோஜ் பாண்டே", "ஜெனரல் மனோஜ் முகுந்த் நரவனே", "ஜெனரல் அனில் சவுகான்", "மேஜர் ஜெனரல் இயன் கார்டோசோ"],
+        a: 1,
+        exp: "Former Army Chief General M. M. Naravane authored 'The Curious and The Classified', published by Rupa Publications."
+    },
+    // 31
+    {
+        qE: "Who is the author of 'The Library Man of India: The Story of P. N. Panicker'?",
+        qT: "'தி லைப்ரரி மேன் ஆஃப் இந்தியா: தி ஸ்டோரி ஆஃப் பி. என். பணிக்கர்' என்ற நூலின் ஆசிரியர் யார்?",
+        oE: ["K. Jayakumar", "Arundhati Roy", "P. P. Sathyan", "K. Arumugam"],
+        oT: ["கே. ஜெயக்குமார்", "அருந்ததி ராய்", "பி. பி. சத்யன்", "கே. ஆறுமுகம்"],
+        a: 2,
+        exp: "P. P. Sathyan authored this tribute to P. N. Panicker, the Father of the Library Movement in Kerala."
+    },
+    // 32
+    {
+        qE: "Which Nobel Prize-winning British novelist unveiled his new novel 'Miss Lambert Steps Aboard Danger' in June 2026?",
+        qT: "ஜூன் 2026-இல் 'மிஸ் லம்பேர்ட் ஸ்டெப்ஸ் அபோர்ட் டேஞ்சர்' என்ற புதிய நாவலை வெளியிட்ட நோபல் பரிசு பெற்ற பிரிட்டிஷ் நாவலாசிரியர் யார்?",
+        oE: ["Jon Fosse", "Annie Ernaux", "Abdulrazak Gurnah", "Kazuo Ishiguro"],
+        oT: ["ஜான் ஃபோஸ்", "ஆனி எர்னோ", "அப்துல்ரசாக் குர்னா", "காசுவோ இஷிகுரோ"],
+        a: 3,
+        exp: "Nobel laureate Kazuo Ishiguro unveiled 'Miss Lambert Steps Aboard Danger' in June 2026."
+    },
+    // 33
+    {
+        qE: "'Triumph of the Indian Republic: My Life, My Struggles' is the autobiography of which former Indian leader?",
+        qT: "'ட்ரையம்ப் ஆஃப் தி இந்தியன் ரிபப்ளிக்: மை லைஃப், மை ஸ்ட்ரகிள்ஸ்' என்பது எந்த முன்னாள் இந்தியத் தலைவரின் சுயசரிதையாகும்?",
+        oE: ["Ram Nath Kovind", "Pranab Mukherjee", "A. P. J. Abdul Kalam", "Hamid Ansari"],
+        oT: ["ராம் நாத் கோவிந்த்", "பிரணாப் முகர்ஜி", "ஏ. பி. ஜே. அப்துல் கலாம்", "ஹமீத் அன்சாரி"],
+        a: 0,
+        exp: "Former President Ram Nath Kovind authored 'Triumph of the Indian Republic: My Life, My Struggles', released by Prime Minister Narendra Modi."
+    },
+
+    // ================= 12 DEEP-DETAIL QUESTIONS FROM NOTES (Q34 - Q45) =================
+    // 34
+    {
+        qE: "Which traditional folk music genre of North Bengal and Assam is documented in 'Sanskritir Ratna Bhandar: Bhaowaiyar Itibritto'?",
+        qT: "'சம்ஸ்கிருதிர் ரத்ன பண்டார்: பாவையார் இதிபிரித்தோ' நூலில் வடக்கு வங்காளம் மற்றும் அசாமின் எந்த பாரம்பரிய நாட்டுப்புற இசை வகை ஆவணப்படுத்தப்பட்டுள்ளது?",
+        oE: ["Baul", "Bhawaiya", "Lavani", "Bihu"],
+        oT: ["பவுல்", "பாவையா", "லாவணி", "பிஹு"],
+        a: 1,
+        exp: "The book documents the history, evolution, and cultural significance of the traditional Bhawaiya folk music genre."
+    },
+    // 35
+    {
+        qE: "How many mural panels located within Parliament are highlighted in Sudha Murty's book 'Tides of Time'?",
+        qT: "சுதா மூர்த்தியின் 'டைட்ஸ் ஆஃப் டைம்' நூலில் நாடாளுமன்றத்தில் உள்ள எத்தனை சுவரோவியப் பலகைகள் சிறப்பிக்கப்பட்டுள்ளன?",
+        oE: ["100", "112", "124", "150"],
+        oT: ["100", "112", "124", "150"],
+        a: 2,
+        exp: "The book highlights India's civilizational journey from Mohenjo-daro to 1947 through 124 mural panels in Parliament."
+    },
+    // 36
+    {
+        qE: "Group Captain Shubhanshu Shukla's memoir 'The Second Orbit' chronicles his training for which mission to the International Space Station?",
+        qT: "குரூப் கேப்டன் சுபான்ஷு சுக்லாவின் 'தி செகண்ட் ஆர்பிட்' நூல் சர்வதேச விண்வெளி நிலையத்திற்கான எந்தப் பயணத்தின் பயிற்சியை விவரிக்கிறது?",
+        oE: ["Artemis-3", "Gaganyaan-1", "Crew-9", "Axiom-4"],
+        oT: ["ஆர்ட்டெமிஸ்-3", "ககன்யான்-1", "குரூ-9", "ஆக்சியம்-4"],
+        a: 3,
+        exp: "'The Second Orbit' chronicles Shubhanshu Shukla's journey and training experiences for the Axiom-4 mission to the ISS."
+    },
+    // 37
+    {
+        qE: "Who wrote the foreword for 'The Voice of Justice: Justice Gavai Speaks'?",
+        qT: "'தி வாய்ஸ் ஆஃப் ஜஸ்டிஸ்: ஜஸ்டிஸ் கவாய் ஸ்பீக்ஸ்' என்ற நூலுக்கு முன்னுரை எழுதியவர் யார்?",
+        oE: ["Justice Surya Kant", "Justice B. R. Gavai", "Justice D. Y. Chandrachud", "C. P. Radhakrishnan"],
+        oT: ["நீதிபதி சூர்யா காந்த்", "நீதிபதி பி. ஆர். கவாய்", "நீதிபதி டி. ஒய். சந்திரசூட்", "சி. பி. ராதாகிருஷ்ணன்"],
+        a: 0,
+        exp: "Chief Justice of India Justice Surya Kant wrote the foreword for 'The Voice of Justice: Justice Gavai Speaks', published by Thomson Reuters with CLEA."
+    },
+    // 38
+    {
+        qE: "How many butterfly species found in Assam's Hoollongapar Gibbon Wildlife Sanctuary are documented in Sarangapani Neog's field guide?",
+        qT: "சாரங்கபாணி நியோக்கின் நூலில் அசாமின் ஹூல்லோங்கபார் கிப்பன் வனவிலங்கு சரணாலயத்தில் காணப்படும் எத்தனை பட்டாம்பூச்சி இனங்கள் ஆவணப்படுத்தப்பட்டுள்ளன?",
+        oE: ["185", "281", "321", "410"],
+        oT: ["185", "281", "321", "410"],
+        a: 1,
+        exp: "Sarangapani Neog's field guide documents 281 butterfly species found in Assam's Hoollongapar Gibbon Wildlife Sanctuary."
+    },
+    // 39
+    {
+        qE: "Which historical period in India is chronicled in Sugata Srinivasaraju's book 'The Conscience Network'?",
+        qT: "சுகதா ஸ்ரீனிவாசராஜுவின் 'தி கான்ஷியன்ஸ் நெட்வொர்க்' நூல் இந்தியாவின் எந்த வரலாற்றுக் காலகட்டத்தை விவரிக்கிறது?",
+        oE: ["Quit India Movement (1942)", "Partition of India (1947)", "Indian Emergency (1975–1977)", "Economic Liberalization (1991)"],
+        oT: ["வெள்ளையனே வெளியேறு இயக்கம் (1942)", "இந்தியப் பிரிவினை (1947)", "இந்திய அவசரநிலை (1975–1977)", "பொருளாதார தாராளமயமாக்கல் (1991)"],
+        a: 2,
+        exp: "'The Conscience Network' chronicles parallel resistance movements organized against the Indian Emergency of 1975–1977."
+    },
+    // 40
+    {
+        qE: "Who released Prabhat Kumar's book 'IIT: The Story of India's Most Prestigious Educational Ecosystem' in June 2026?",
+        qT: "ஜூன் 2026-இல் பிரபாத் குமாரின் 'ஐஐடி: தி ஸ்டோரி ஆஃப் இந்தியாஸ் மோஸ்ட் பிரெஸ்டீஜியஸ் எஜுகேஷனல் எக்கோசிஸ்டம்' நூலை வெளியிட்டவர் யார்?",
+        oE: ["Narendra Modi", "C. P. Radhakrishnan", "Dharmendra Pradhan", "Om Birla"],
+        oT: ["நரேந்திர மோடி", "சி. பி. ராதாகிருஷ்ணன்", "தர்மேந்திர பிரதான்", "ஓம் பிர்லா"],
+        a: 3,
+        exp: "Lok Sabha Speaker Om Birla released Prabhat Kumar's book on the IIT ecosystem in June 2026."
+    },
+    // 41
+    {
+        qE: "Which historic Olympic hockey triumph is detailed in K. Arumugam's book 'India's First Olympic Gold'?",
+        qT: "கே. ஆறுமுகத்தின் 'இந்தியாஸ் ஃபர்ஸ்ட் ஒலிம்பிக் கோல்ட்' நூலில் எந்த வரலாற்றுச் சிறப்புமிக்க ஒலிம்பிக் ஹாக்கி வெற்றி விவரிக்கப்பட்டுள்ளது?",
+        oE: ["1928 Amsterdam Olympics", "1932 Los Angeles Olympics", "1936 Berlin Olympics", "1948 London Olympics"],
+        oT: ["1928 ஆம்ஸ்டர்டாம் ஒலிம்பிக்", "1932 லாஸ் ஏஞ்சல்ஸ் ஒலிம்பிக்", "1936 பெர்லின் ஒலிம்பிக்", "1948 லண்டன் ஒலிம்பிக்"],
+        a: 0,
+        exp: "K. Arumugam's book details India's historic first Olympic hockey gold medal victory at the 1928 Amsterdam Games."
+    },
+    // 42
+    {
+        qE: "Who translated the International Booker Prize 2026-winning novel 'Taiwan Travelogue' into English?",
+        qT: "2026 சர்வதேச புக்கர் பரிசை வென்ற 'தைவான் டிராவலாக்' நாவலை ஆங்கிலத்தில் மொழிபெயர்த்தவர் யார்?",
+        oE: ["Yang Shuang-zi", "Lin King", "Kazuo Ishiguro", "Jenny Erpenbeck"],
+        oT: ["யாங் ஷுவாங்-சி", "லின் கிங்", "காசுவோ இஷிகுரோ", "ஜென்னி எர்பென்பெக்"],
+        a: 1,
+        exp: "'Taiwan Travelogue' was written by Yang Shuang-zi and translated into English by Lin King."
+    },
+    // 43
+    {
+        qE: "Buxi Jagabandhu, honoured in Biswabhusan Harichandan's book, was the historic leader of which 1817 uprising in Odisha?",
+        qT: "பிஸ்வபூஷண் ஹரிசந்தனின் நூலில் போற்றப்படும் பக்ஷி ஜகபந்து, ஒடிசாவில் 1817-இல் நடைபெற்ற எந்தக் கிளர்ச்சியின் வரலாற்றுத் தலைவராவார்?",
+        oE: ["Santhal Rebellion", "Munda Uprising", "Paika Rebellion", "Sannyasi Rebellion"],
+        oT: ["சந்தால் கிளர்ச்சி", "முண்டா எழுச்சி", "பாய்கா கிளர்ச்சி", "சந்நியாசி கிளர்ச்சி"],
+        a: 2,
+        exp: "Buxi Jagabandhu led the historic Paika Rebellion of 1817 against British colonial rule in Odisha."
+    },
+    // 44
+    {
+        qE: "P. N. Panicker, whose life is chronicled in P. P. Sathyan's book, is popularly known as the Father of the Library Movement in which state?",
+        qT: "பி. பி. சத்யனின் நூலில் வாழ்க்கை வரலாறு விவரிக்கப்பட்டுள்ள பி. என். பணிக்கர் எந்த மாநிலத்தின் நூலக இயக்கத்தின் தந்தை என அழைக்கப்படுகிறார்?",
+        oE: ["Tamil Nadu", "Karnataka", "Andhra Pradesh", "Kerala"],
+        oT: ["தமிழ்நாடு", "கர்நாடகா", "ஆந்திரப் பிரதேசம்", "கேரளா"],
+        a: 3,
+        exp: "P. N. Panicker is popularly known as the Father of the Library Movement in Kerala."
+    },
+    // 45
+    {
+        qE: "Which publishing house published both Tushar Mehta's 'The Bench, The Bar and The Bizarre' and General M. M. Naravane's 'The Curious and The Classified'?",
+        qT: "துஷார் மேத்தாவின் 'தி பெஞ்ச், தி பார் அண்ட் தி பிசார்' மற்றும் ஜெனரல் எம். எம். நரவனேயின் 'தி கியூரியஸ் அண்ட் தி கிளாசிஃபைட்' ஆகிய இரு நூல்களையும் வெளியிட்ட பதிப்பகம் எது?",
+        oE: ["Penguin Random House", "Rupa Publications", "HarperCollins India", "Thomson Reuters"],
+        oT: ["பெங்குயின் ரேண்டம் ஹவுஸ்", "ரூபா பப்ளிகேஷன்ஸ்", "ஹார்பர்காலின்ஸ் இந்தியா", "தாம்சன் ராய்ட்டர்ஸ்"],
+        a: 1,
+        exp: "Both Tushar Mehta's legal books and General M. M. Naravane's 'The Curious and The Classified' were published by Rupa Publications."
+    },
+
+    // ================= 5 STATEMENT-BASED QUESTIONS (Q46 - Q50) =================
+    // 46 (Ans: 0 - Only 1)
+    {
+        qE: "Consider the following statements:\n1. Vice-President C. P. Radhakrishnan released both 'Tides of Time' and 'The Library Man of India'.\n2. 'Triumph of the Indian Republic' was released by Lok Sabha Speaker Om Birla.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. துணைக் குடியரசுத் தலைவர் சி. பி. ராதாகிருஷ்ணன் 'டைட்ஸ் ஆஃப் டைம்' மற்றும் 'தி லைப்ரரி மேன் ஆஃப் இந்தியா' ஆகிய இரு நூல்களையும் வெளியிட்டார்.\n2. 'ட்ரையம்ப் ஆஃப் தி இந்தியன் ரிபப்ளிக்' நூலை மக்களவை சபாநாயகர் ஓம் பிர்லா வெளியிட்டார்.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 0,
+        exp: "Statement 1 is correct. Statement 2 is incorrect because Ram Nath Kovind's autobiography 'Triumph of the Indian Republic' was released by PM Narendra Modi."
+    },
+    // 47 (Ans: 1 - Only 2)
+    {
+        qE: "Consider the following statements:\n1. 'Four Stars of Destiny' is the autobiography of General Bipin Rawat.\n2. General Manoj Mukund Naravane authored 'The Curious and The Classified: Unearthing Military Myths and Mysteries'.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. 'ஃபோர் ஸ்டார்ஸ் ஆஃப் டெஸ்டினி' என்பது ஜெனரல் பிபின் ராவத்தின் சுயசரிதையாகும்.\n2. ஜெனரல் மனோஜ் முகுந்த் நரவனே 'தி கியூரியஸ் அண்ட் தி கிளாசிஃபைட்' என்ற நூலை எழுதியுள்ளார்.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 1,
+        exp: "Statement 1 is incorrect because 'Four Stars of Destiny' is the autobiography of General Manoj Mukund Naravane. Statement 2 is correct."
+    },
+    // 48 (Ans: 2 - Both 1 and 2)
+    {
+        qE: "Consider the following statements:\n1. Both Kailash Satyarthi and Kazuo Ishiguro are Nobel Prize laureates whose books were released in 2026.\n2. 'The Voice of Justice: Justice Gavai Speaks' was published by Thomson Reuters in association with CLEA.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. கைலாஷ் சத்யார்த்தி மற்றும் காசுவோ இஷிகுரோ ஆகிய இருவரும் 2026-இல் நூல்களை வெளியிட்ட நோபல் பரிசு வென்றவர்கள்.\n2. 'தி வாய்ஸ் ஆஃப் ஜஸ்டிஸ்: ஜஸ்டிஸ் கவாய் ஸ்பீக்ஸ்' நூல் CLEA உடன் இணைந்து தாம்சன் ராய்ட்டர்ஸால் வெளியிடப்பட்டது.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 2,
+        exp: "Both statements are correct."
+    },
+    // 49 (Ans: 3 - Neither 1 nor 2)
+    {
+        qE: "Consider the following statements:\n1. 'Apnapan' was authored by Goa Chief Minister Pramod Sawant.\n2. 'History That India Ignored' was authored by Union Minister Shivraj Singh Chouhan.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. 'அப்னாபன்' நூலை கோவா முதல்வர் பிரமோத் சாவந்த் எழுதியுள்ளார்.\n2. 'ஹிஸ்டரி தட் இந்தியா இக்னோர்ட்' நூலை மத்திய அமைச்சர் சிவராஜ் சிங் சௌஹான் எழுதியுள்ளார்.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 3,
+        exp: "Both statements are incorrect. 'Apnapan' was authored by Shivraj Singh Chouhan, and 'History That India Ignored' was authored by Prem Prakash (released by Pramod Sawant)."
+    },
+    // 50 (Ans: 0 - Only 1)
+    {
+        qE: "Consider the following statements:\n1. 'Bringing the Cheetah Back to India' was authored by diplomat Prashant Agrawal.\n2. 'Better Never Stops' is the debut book of former RBI Governor Shaktikanta Das.",
+        qT: "பின்வரும் கூற்றுகளைக் கவனியுங்கள்:\n1. 'பிரிங்கிங் தி சீட்டா பேக் டு இந்தியா' நூலை தூதர் பிரசாந்த் அகர்வால் எழுதியுள்ளார்.\n2. 'பெட்டர் நெவர் ஸ்டாப்ஸ்' என்பது முன்னாள் ஆர்பிஐ ஆளுநர் சக்திகாந்த தாஸின் முதல் நூலாகும்.",
+        oE: ["Only 1", "Only 2", "Both 1 and 2", "Neither 1 nor 2"],
+        oT: ["1 மட்டும்", "2 மட்டும்", "1 மற்றும் 2 இரண்டும்", "1 மற்றும் 2 இரண்டும் இல்லை"],
+        a: 0,
+        exp: "Statement 1 is correct. Statement 2 is incorrect because 'Better Never Stops' is the debut book of Federal Bank CEO Shyam Srinivasan."
+    }
+];
+let quizData = [];
+let currentQ = 0;
+let answers = [];
+let status = []; // 0: Not Visited, 1: Not Answered, 2: Answered, 3: Marked, 4: Answered & Marked
+
+// Shuffle array algorithm
+function shuffleArray(array) {
+    let shuffled = array.slice();
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+// Switch Views
+function switchView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+}
+
+function startQuiz() {
+    quizData = shuffleArray(baseQuizData);
+    answers = new Array(50).fill(null);
+    status = new Array(50).fill(0);
+    
+    switchView('view-quiz');
+    
+    buildPalette();
+    loadQuestion(0);
+    startTimer();
+    
+    if(window.innerWidth <= 768) {
+        document.getElementById('close-palette-btn').style.display = 'block';
+    }
+}
+
+function buildPalette() {
+    const grid = document.getElementById('palette-grid');
+    grid.innerHTML = '';
+    for(let i=0; i<50; i++) {
+        let bubble = document.createElement('div');
+        bubble.className = 'q-bubble status-' + status[i];
+        bubble.innerText = (i+1);
+        bubble.id = 'pb-' + i;
+        bubble.onclick = () => jumpToQuestion(i);
+        grid.appendChild(bubble);
+    }
+}
+
+function syncAnswer() {
+    let selected = document.querySelector('input[name="opt"]:checked');
+    if(selected) {
+        answers[currentQ] = parseInt(selected.value);
+    } else {
+        answers[currentQ] = null;
+    }
+}
+
+function updatePaletteCSS() {
+    for(let i=0; i<50; i++) {
+        let bubble = document.getElementById('pb-' + i);
+        bubble.className = 'q-bubble status-' + status[i];
+        if(i === currentQ) bubble.classList.add('active');
+    }
+}
+
+function loadQuestion(index) {
+    if(status[currentQ] === 0) {
+        status[currentQ] = (answers[currentQ] !== null) ? 2 : 1;
+    }
+    
+    currentQ = index;
+    if(status[currentQ] === 0) status[currentQ] = 1;
+
+    document.getElementById('q-no').innerText = "Question " + (currentQ + 1);
+    
+    // Format statement questions with line breaks
+    let qTextEn = quizData[currentQ].qE.replace(/\n/g, "<br>");
+    let qTextTa = quizData[currentQ].qT.replace(/\n/g, "<br>");
+    
+    document.getElementById('q-text-en').innerHTML = qTextEn;
+    document.getElementById('q-text-ta').innerHTML = qTextTa;
+
+    let optHtml = '';
+    for(let i=0; i<4; i++) {
+        let checked = (answers[currentQ] === i) ? 'checked' : '';
+        optHtml += `
+            <label class="option-label">
+                <input type="radio" name="opt" value="${i}" ${checked} onchange="syncAnswer()">
+                <div>
+                    <div>${quizData[currentQ].oE[i]}</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">${quizData[currentQ].oT[i]}</div>
+                </div>
+            </label>
+        `;
+    }
+    document.getElementById('options-container').innerHTML = optHtml;
+    
+    // Clear scroll position to top of container when moving to a new question
+    document.querySelector('.question-scroll-area').scrollTop = 0;
+    
+    updatePaletteCSS();
+}
+
+function jumpToQuestion(i) {
+    syncAnswer();
+    loadQuestion(i);
+    if(window.innerWidth <= 768) togglePalette();
+}
+
+function saveAndNext() {
+    syncAnswer();
+    status[currentQ] = (answers[currentQ] !== null) ? 2 : 1;
+    if(currentQ < 49) loadQuestion(currentQ + 1);
+    else updatePaletteCSS();
+}
+
+function markAndNext() {
+    syncAnswer();
+    status[currentQ] = (answers[currentQ] !== null) ? 4 : 3;
+    if(currentQ < 49) loadQuestion(currentQ + 1);
+    else updatePaletteCSS();
+}
+
+function clearResponse() {
+    answers[currentQ] = null;
+    status[currentQ] = 1;
+    loadQuestion(currentQ);
+}
+
+function prevQuestion() {
+    syncAnswer();
+    if(currentQ > 0) loadQuestion(currentQ - 1);
+}
+
+function togglePalette() {
+    document.getElementById('palette').classList.toggle('open');
+}
+
+// Timer Logic
+let timeLimit = 15 * 60; // 15 mins
+let timerInterval;
+
+function startTimer() {
+    timerInterval = setInterval(() => {
+        timeLimit--;
+        let m = Math.floor(timeLimit / 60).toString().padStart(2, '0');
+        let s = (timeLimit % 60).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = m + ':' + s;
+        if(timeLimit <= 0) {
+            clearInterval(timerInterval);
+            submitExam();
+        }
+    }, 1000);
+}
+
+// Custom Submit Modals
+function showSubmitConfirm() {
+    syncAnswer();
+    let unattempted = answers.filter(a => a === null).length;
+    let warningTxt = document.getElementById('unanswered-warning');
+    if(unattempted > 0) {
+        warningTxt.innerText = `You have ${unattempted} unattempted questions!`;
+        warningTxt.style.display = 'block';
+    } else {
+        warningTxt.style.display = 'none';
+    }
+    document.getElementById('confirm-modal').style.display = 'flex';
+}
+
+function closeSubmitConfirm() {
+    document.getElementById('confirm-modal').style.display = 'none';
+}
+
+function submitExam() {
+    clearInterval(timerInterval);
+    document.getElementById('confirm-modal').style.display = 'none';
+    syncAnswer();
+    
+    let correct = 0, wrong = 0, unattempted = 0;
+    
+    quizData.forEach((q, i) => {
+        if(answers[i] === null) unattempted++;
+        else if(answers[i] === q.a) correct++;
+        else wrong++;
+    });
+    
+    let score = correct - (wrong * 0.3333);
+    
+    document.getElementById('res-score').innerText = score.toFixed(2);
+    document.getElementById('res-correct').innerText = correct;
+    document.getElementById('res-wrong').innerText = wrong;
+    document.getElementById('res-unattempted').innerText = unattempted;
+    
+    switchView('view-results');
+}
+
+// Detailed Review with Tabs
+function showDetailedReview() {
+    let htmlCorrect = '';
+    let htmlWrong = '';
+    let htmlUnattempted = '';
+    
+    quizData.forEach((q, i) => {
+        let isAttempted = answers[i] !== null;
+        let isCorrect = isAttempted && answers[i] === q.a;
+        let cssClass = !isAttempted ? 'unattempted' : (isCorrect ? 'correct' : 'wrong');
+        
+        let chosenText = isAttempted ? q.oE[answers[i]] : "None";
+        let correctText = q.oE[q.a];
+        
+        let qText = q.qE.replace(/\n/g, "<br>");
+        let tagHtml = !isAttempted ? `<span class="answer-tag tag-unattempted">Unattempted</span>` : 
+                      isCorrect ? `<span class="answer-tag tag-correct">Correct (+1.0)</span>` : 
+                      `<span class="answer-tag tag-wrong">Incorrect (-0.33)</span>`;
+                      
+        let explanationText = q.exp || `The correct answer is ${correctText}.`;
+        
+        let itemHtml = `
+            <div class="review-item ${cssClass}">
+                <strong style="font-size: 1.1rem; color: #fff;">Q${i+1}: ${qText}</strong><br>
+                ${tagHtml}
+                <div style="margin-top: 15px; font-size: 0.95rem; display: grid; gap: 8px;">
+                    <div><span style="color: var(--text-secondary)">Your Answer:</span> <span style="color: ${!isAttempted ? '#9e9e9e' : isCorrect ? 'var(--color-answered)' : 'var(--color-not-answered)'}">${chosenText}</span></div>
+                    <div><span style="color: var(--text-secondary)">Correct Answer:</span> <span style="color: var(--color-answered); font-weight: bold;">${correctText}</span></div>
+                </div>
+                <div class="explanation-box">
+                    <strong style="color: var(--primary-cyan);">Explanation:</strong><br>
+                    ${explanationText}
+                </div>
+            </div>
+        `;
+        
+        if (!isAttempted) htmlUnattempted += itemHtml;
+        else if (isCorrect) htmlCorrect += itemHtml;
+        else htmlWrong += itemHtml;
+    });
+    
+    // Inject Content
+    document.getElementById('review-content-correct').innerHTML = htmlCorrect || "<div style='text-align:center; padding: 30px; color: var(--text-secondary);'>No correct answers recorded in this session.</div>";
+    document.getElementById('review-content-wrong').innerHTML = htmlWrong || "<div style='text-align:center; padding: 30px; color: var(--color-answered); font-weight: bold;'>Amazing job! You had no incorrect answers!</div>";
+    document.getElementById('review-content-unattempted').innerHTML = htmlUnattempted || "<div style='text-align:center; padding: 30px; color: var(--text-secondary);'>You attempted every single question. Great effort!</div>";
+    
+    // Setup Tab counts
+    document.getElementById('tab-count-correct').innerText = document.getElementById('res-correct').innerText;
+    document.getElementById('tab-count-wrong').innerText = document.getElementById('res-wrong').innerText;
+    document.getElementById('tab-count-unattempted').innerText = document.getElementById('res-unattempted').innerText;
+    
+    // Display Section
+    document.getElementById('post-exam-actions').style.display = 'none';
+    document.getElementById('detailed-review-section').style.display = 'block';
+    
+    // Default to the first tab that has data
+    if (htmlWrong) switchTab('wrong');
+    else if (htmlCorrect) switchTab('correct');
+    else switchTab('unattempted');
+}
+
+function switchTab(tabId) {
+    // Reset buttons and content visibility
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    // Activate chosen tab
+    document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+    document.getElementById(`review-content-${tabId}`).classList.add('active');
+}
+</script>
+</body>
+</html>
+
+```
